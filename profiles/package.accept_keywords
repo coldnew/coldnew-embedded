@@ -1,3 +1,4 @@
 =sys-apps/util-linux-9999 **
 =sys-apps/coreutils-9999 **
 =sys-apps/sed-9999 **
+dev-libs/libmodbus **
