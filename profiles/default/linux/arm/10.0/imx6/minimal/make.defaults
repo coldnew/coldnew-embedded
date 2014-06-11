@@ -1,0 +1,39 @@
+CHOST=armv7a-hardfloat-linux-gnueabi
+ARCH=arm
+E_MACHINE=EM_ARM
+
+ACCEPT_KEYWORDS="arm ~arm"
+
+#USE="${ARCH} zlib bindist make-symlinks minimal -acl -python -nls -cracklib -fortran -mudflap -ipv6 -unicode sane"
+
+USE="${USE} ${ARCH}"
+USE="${USE} minimal elibc_glibc kernel_linux"
+USE="${USE} opengl egl gles2 evdev"
+USE="${USE} -X -qt4 -gtk"
+USE="${USE} -pam -nls"
+USE="${USE} -perl -python"
+
+MARCH_TUNE="-march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hardfloat"
+CFLAGS="-Os -pipe ${MARCH_TUNE} -fomit-frame-pointer -ftree-vectorize"
+CXXFLAGS="${CFLAGS}"
+
+FEATURES="-collision-protect parallel-fetch sandbox buildpkg noman noinfo nodoc sfperms"
+
+# Be sure we dont overwrite pkgs from another repo..
+ELIBC="glibc"
+KERNEL="linux"
+USERLAND="GNU"
+CLEAN_DELAY=0
+EPAUSE_IGNORE=1
+EBEEP_IGNORE=1
+PORTAGE_WORKDIR_MODE=2775
+PORTAGE_ECLASS_WARNING_ENABLE=0
+USE_EXPAND="ELIBC INPUT_DEVICES VIDEO_CARDS KERNEL USERLAND LINGUAS"
+
+UCLIBC_CPU_DEFAULT="GENERIC_ARM"
+
+### Hardware
+VIDEO_CARDS="fbdev dummy"
+ALSA_CARDS=""
+INPUT_DEVICES="evdev keyboard mouse touchscreen"
+USE_EXPAND="video_cards input_devices"
