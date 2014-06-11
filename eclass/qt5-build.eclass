@@ -197,7 +197,7 @@ qt5-build_src_prepare() {
 			configure || die "sed failed (respect env for qmake build)"
 		    sed -i -e '/^CPPFLAGS\s*=/ s/-g //' \
 			qmake/Makefile.unix || die "sed failed (CPPFLAGS for qmake build)"
-
+		fi
 
 		# Reset QMAKE_*FLAGS_{RELEASE,DEBUG} variables,
 		# or they will override user's flags (bug 427782)
@@ -221,7 +221,6 @@ qt5-build_src_prepare() {
 				-e '/LFLAGS=/ s/"(\$LFLAGS) (\$PARAM)"/"\2 \1"/' \
 				-e '/bin\/qmake/ s/-nocache //' \
 			|| die "sed failed (config.tests)"
-		fi
 	fi
 
 	if [[ ${PN} != qtcore ]]; then
@@ -237,13 +236,16 @@ qt5-build_src_prepare() {
 # @DESCRIPTION:
 # Runs qmake, possibly preceded by ./configure.
 qt5-build_src_configure() {
-# Mask for emerge-crossdeva
-	# toolchain setup
-#	tc-export CC CXX RANLIB STRIP
+	if [[ ${QT5_MODULE} != qtbase ]]; then
+	    # toolchain setup
+	    tc-export CC CXX RANLIB STRIP
 
-	# qmake-generated Makefiles use LD/LINK for linking
-# Mask for emerge-crossdeva
-#	export LD="$(tc-getCXX)"
+	    # qmake-generated Makefiles use LD/LINK for linking
+	    export LD="$(tc-getCXX)"
+	fi
+
+	export PKG_CONFIG_LIBDIR=${SYSROOT}/usr/lib/pkgconfig
+	export PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
 
 	mkdir -p "${QT5_BUILD_DIR}" || die
 	pushd "${QT5_BUILD_DIR}" >/dev/null || die
@@ -449,6 +451,13 @@ qt5_symlink_tools_to_build_dir() {
 # @DESCRIPTION:
 # Runs ./configure for modules belonging to qtbase.
 qt5_base_configure() {
+    # check if use emerge-cross to build qt, if yes, make cross
+    # compile work
+    if [ "${CBUILD}" != "${CHOST}" ]; then
+	cp -rf ${WORKDIR}/${MY_P}/mkspecs/linux-arm-gnueabi-g++ ${WORKDIR}/${MY_P}/mkspecs/${CHOST}-g++
+	sed -i "s/arm-linux-gnueabi/${CHOST}/" ${WORKDIR}/${MY_P}/mkspecs/${CHOST}-g++/qmake.conf
+    fi
+
 	# configure arguments
 	local conf=(
 		# installation paths
@@ -526,6 +535,10 @@ qt5_base_configure() {
 
 		# do not build with -Werror
 		-no-warnings-are-errors
+
+		# for cross-emerge
+		-xplatform ${CHOST}-g++
+    		-platform linux-g++
 
 		# module-specific options
 		"${myconf[@]}"

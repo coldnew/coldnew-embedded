@@ -57,21 +57,11 @@ pkg_setup() {
 
 src_configure() {
 
-    # check if use emerge-cross to build qt, if yes, make cross
-    # compile work
-    if [ "${CBUILD}" != "${CHOST}" ]; then
-	cp -rf ${WORKDIR}/${MY_P}/mkspecs/linux-arm-gnueabi-g++ ${WORKDIR}/${MY_P}/mkspecs/${CHOST}-g++
-	sed -i "s/arm-linux-gnueabi/${CHOST}/" ${WORKDIR}/${MY_P}/mkspecs/${CHOST}-g++/qmake.conf
-    fi
-
     local myconf=(
         $(qt_use glib)
         -iconv
         $(qt_use icu)
-        -xplatform ${CHOST}-g++
-    	-platform linux-g++
     )
 
-    PKG_CONFIG_LIBDIR=${SYSROOT}/usr/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=${SYSROOT} \
-	qt5-build_src_configure
+    qt5-build_src_configure
 }

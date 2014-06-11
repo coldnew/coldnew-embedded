@@ -34,8 +34,12 @@ QT5_TARGET_SUBDIRS=(
 QCONFIG_ADD=( dbus dbus-linked )
 
 src_configure() {
+
 	local myconf=(
 		-dbus-linked
+		-xplatform ${CHOST}-g++
+    		-platform linux-g++
 	)
+
 	qt5-build_src_configure
 }
