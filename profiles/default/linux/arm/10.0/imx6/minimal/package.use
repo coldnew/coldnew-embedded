@@ -1,0 +1,2 @@
+# Make busybox as static
+sys-apps/busybox make-symlinks savedconfig static

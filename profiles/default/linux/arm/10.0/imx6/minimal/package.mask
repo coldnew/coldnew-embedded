@@ -5,6 +5,3 @@
 # seems like build failed
 =dev-lang/python-3.1.1
 =dev-lang/python-3.1
-
-# Make busybox as static
-sys-apps/busybox make-symlinks savedconfig static
