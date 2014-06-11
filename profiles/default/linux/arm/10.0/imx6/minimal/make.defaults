@@ -13,6 +13,7 @@ USE="${USE} -X -qt4 -gtk"
 USE="${USE} -pam -nls"
 USE="${USE} -perl -python"
 USE="${USE} -ipv6"
+USE="${USE} -ipv6 -examples"
 
 MARCH_TUNE="-march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hardfloat"
 CFLAGS="-Os -pipe ${MARCH_TUNE} -fomit-frame-pointer -ftree-vectorize"

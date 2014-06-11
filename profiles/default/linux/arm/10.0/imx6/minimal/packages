@@ -65,7 +65,7 @@
 #*sys-devel/m4
 #*sys-devel/make
 #*>=sys-devel/patch-2.6.1
-*sys-fs/e2fsprogs
+#*sys-fs/e2fsprogs
 #*virtual/dev-manager
 #*virtual/editor
 #*virtual/libc
