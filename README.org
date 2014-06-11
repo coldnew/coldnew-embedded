@@ -5,13 +5,10 @@ This is an experimental gentoo overlay which is aim to create a
 minimal linux rootfs based on corssdev.
 
 
-* TODO How to use
+* How to use
 
+After use
 
-** todo
+: crossdev -t armv7a-hardfloat-linux-gnueabi
 
-#+BEGIN_SRC sh
-  mkdir ${SYSROOT}/etc/portage/package.accept_keywords
-  cd ${SYSROOT}/etc/portage/package.accept_keywords
-  ln -s /var/lib/layman/coldnew-embedded/profiles/package.accept_keywords .
-#+END_SRC
+Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to =/usr/local/portage/layman/coldnew-embedded/profiles/default/linux/arm/10.0/imx6/minimal=.
