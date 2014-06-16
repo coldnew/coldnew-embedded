@@ -197,6 +197,7 @@ qt5-build_src_prepare() {
 			configure || die "sed failed (respect env for qmake build)"
 		    sed -i -e '/^CPPFLAGS\s*=/ s/-g //' \
 			qmake/Makefile.unix || die "sed failed (CPPFLAGS for qmake build)"
+
 		fi
 
 		# Reset QMAKE_*FLAGS_{RELEASE,DEBUG} variables,
@@ -301,7 +302,16 @@ qt5-build_src_test() {
 # @DESCRIPTION:
 # Performs the actual installation of target directories.
 qt5-build_src_install() {
+
 	qt5_foreach_target_subdir emake INSTALL_ROOT="${D}" install
+
+	# fix for crrossbuild emerge path
+	if [ "${CBUILD}" != "${CHOST}" ]; then
+		pushd "${D}" >/dev/null || die
+		mv "usr/${CHOST}/*" "usr/"
+		rm -rf "usr/${CHOST}/"
+		popd >/dev/null || die
+	fi
 
 	if [[ ${PN} == qtcore ]]; then
 		pushd "${QT5_BUILD_DIR}" >/dev/null || die
@@ -317,6 +327,15 @@ qt5-build_src_install() {
 		sed -i -e '2a#include <Gentoo/gentoo-qconfig.h>\n' \
 			"${D}${QT5_HEADERDIR}"/QtCore/qconfig.h \
 			|| die "sed failed (qconfig.h)"
+
+		# NOTE: when install qmake, also install qt.conf to
+		# prevent run qmake error in host
+		if [ "${CBUILD}" != "${CHOST}" ]; then
+		    sed -i "s:\.\.:${SYSROOT}/usr/lib/qt5:" "${QT5_BUILD_DIR}"/bin/qt.conf
+
+		    insinto ${QT5_BINDIR}
+		    doins "${QT5_BUILD_DIR}"/bin/qt.conf
+		fi
 	fi
 
 	qt5_install_module_qconfigs
@@ -385,7 +404,15 @@ qt_use_disable_mod() {
 # Prepares the environment for building Qt.
 qt5_prepare_env() {
 	# setup installation directories
-	QT5_PREFIX=${EPREFIX}/usr
+
+	QT5_SYSROOT=${SYSROOT}
+
+	if [ "${CBUILD}" != "${CHOST}" ]; then
+	    QT5_PREFIX=${QT5_SYSROOT}/usr
+	else
+	    QT5_PREFIX=${EPREFIX}/usr
+	fi
+
 	QT5_HEADERDIR=${QT5_PREFIX}/include/qt5
 	QT5_LIBDIR=${QT5_PREFIX}/$(get_libdir)
 	QT5_ARCHDATADIR=${QT5_PREFIX}/$(get_libdir)/qt5
@@ -403,7 +430,7 @@ qt5_prepare_env() {
 
 	if [[ ${QT5_MODULE} == qtbase ]]; then
 		# see mkspecs/features/qt_config.prf
-		export QMAKEMODULES="${QT5_BUILD_DIR}/mkspecs/modules:${S}/mkspecs/modules:${QT5_ARCHDATADIR}/mkspecs/modules"
+		export QMAKEMODULES="${QT5_BUILD_DIR}/mkspecs/modules:${S}/mkspecs/modules:${SYSROOT}/${QT5_ARCHDATADIR}/mkspecs/modules"
 	fi
 }
 
@@ -461,7 +488,7 @@ qt5_base_configure() {
 	# configure arguments
 	local conf=(
 		# installation paths
-		-prefix "${QT5_PREFIX}"
+	        -prefix "${QT5_PREFIX}"
 		-bindir "${QT5_BINDIR}"
 		-headerdir "${QT5_HEADERDIR}"
 		-libdir "${QT5_LIBDIR}"
@@ -536,11 +563,10 @@ qt5_base_configure() {
 		# do not build with -Werror
 		-no-warnings-are-errors
 
-		# for cross-emerge
+		# NOTE: for cross-emerge
 		-xplatform ${CHOST}-g++
     		-platform linux-g++
 
-		# module-specific options
 		"${myconf[@]}"
 	)
 

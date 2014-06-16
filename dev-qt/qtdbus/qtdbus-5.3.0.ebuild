@@ -22,7 +22,6 @@ DEPEND="
 	~dev-qt/qtcore-${PV}[debug=]
 	>=sys-apps/dbus-1.4.20
 	sys-libs/zlib
-	dev-libs/libpcre
 "
 RDEPEND="${DEPEND}"
 
@@ -37,8 +36,6 @@ src_configure() {
 
 	local myconf=(
 		-dbus-linked
-		-xplatform ${CHOST}-g++
-    		-platform linux-g++
 	)
 
 	qt5-build_src_configure
