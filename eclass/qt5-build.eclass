@@ -342,6 +342,15 @@ qt5-build_src_install() {
 		mv "usr_old/${CHOST}/usr" .
 		rm -rf "usr_old"
 	fi
+
+	# fix for qtdbus multiple install host files
+	if [[ ${PN} == qtdbus ]]; then
+	    cd "${D}"
+	    rm -rf usr/lib/libQt5Bootstrap.a
+	    rm -rf usr/lib/libQt5Bootstrap.prl
+	    rm -rf usr/lib/pkgconfig/Qt5Bootstrap.pc
+	    rm -rf usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri
+	fi
 }
 
 # @FUNCTION: qt5-build_pkg_postinst
