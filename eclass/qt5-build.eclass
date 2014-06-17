@@ -344,12 +344,12 @@ qt5-build_src_install() {
 	fi
 
 	# fix for qtdbus multiple install host files
-	if [[ ${PN} == qtdbus ]]; then
+	if [[ ${PN} != qtcore ]]; then
 	    cd "${D}"
-	    rm -rf usr/lib/libQt5Bootstrap.a
-	    rm -rf usr/lib/libQt5Bootstrap.prl
-	    rm -rf usr/lib/pkgconfig/Qt5Bootstrap.pc
-	    rm -rf usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri
+	    rm -rf usr/lib/libQt5Bootstrap.a > /dev/null 2>&1
+	    rm -rf usr/lib/libQt5Bootstrap.prl > /dev/null 2>&1
+	    rm -rf usr/lib/pkgconfig/Qt5Bootstrap.pc > /dev/null 2>&1
+	    rm -rf usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri > /dev/null 2>&1
 	fi
 }
 
