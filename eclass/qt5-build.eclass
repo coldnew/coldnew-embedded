@@ -305,14 +305,6 @@ qt5-build_src_install() {
 
 	qt5_foreach_target_subdir emake INSTALL_ROOT="${D}" install
 
-	# fix for crrossbuild emerge path
-	if [ "${CBUILD}" != "${CHOST}" ]; then
-		pushd "${D}" >/dev/null || die
-		mv "usr/${CHOST}/*" "usr/"
-		rm -rf "usr/${CHOST}/"
-		popd >/dev/null || die
-	fi
-
 	if [[ ${PN} == qtcore ]]; then
 		pushd "${QT5_BUILD_DIR}" >/dev/null || die
 		einfo "Running emake INSTALL_ROOT=${D} install_{mkspecs,qmake,syncqt}"
@@ -336,6 +328,15 @@ qt5-build_src_install() {
 		    insinto ${QT5_BINDIR}
 		    doins "${QT5_BUILD_DIR}"/bin/qt.conf
 		fi
+	fi
+
+
+	# fix for crrossbuild emerge path
+	if [ "${CBUILD}" != "${CHOST}" ]; then
+		cd "${D}"
+		mv "usr" "usr_old"
+		mv "usr_old/${CHOST}/usr" .
+		rm -rf "usr_old"
 	fi
 
 	qt5_install_module_qconfigs
