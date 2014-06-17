@@ -330,6 +330,10 @@ qt5-build_src_install() {
 		fi
 	fi
 
+	qt5_install_module_qconfigs
+
+	# remove .la files since we are building only shared libraries
+	prune_libtool_files
 
 	# fix for crrossbuild emerge path
 	if [ "${CBUILD}" != "${CHOST}" ]; then
@@ -338,11 +342,6 @@ qt5-build_src_install() {
 		mv "usr_old/${CHOST}/usr" .
 		rm -rf "usr_old"
 	fi
-
-	qt5_install_module_qconfigs
-
-	# remove .la files since we are building only shared libraries
-	prune_libtool_files
 }
 
 # @FUNCTION: qt5-build_pkg_postinst
@@ -624,17 +623,20 @@ qt5_install_module_qconfigs() {
 qt5_regenerate_global_qconfigs() {
 	einfo "Regenerating gentoo-qconfig.h"
 
-	find "${ROOT%/}${QT5_HEADERDIR}"/Gentoo \
+#	find "${ROOT%/}${QT5_HEADERDIR}"/Gentoo \
+	find "${QT5_HEADERDIR}"/Gentoo \
 		-name '*-qconfig.h' -a \! -name 'gentoo-qconfig.h' -type f \
 		-execdir cat '{}' + > "${T}"/gentoo-qconfig.h
 
 	[[ -s ${T}/gentoo-qconfig.h ]] || ewarn "Generated gentoo-qconfig.h is empty"
-	mv -f "${T}"/gentoo-qconfig.h "${ROOT%/}${QT5_HEADERDIR}"/Gentoo/gentoo-qconfig.h \
+#	mv -f "${T}"/gentoo-qconfig.h "${ROOT%/}${QT5_HEADERDIR}"/Gentoo/gentoo-qconfig.h \
+	mv -f "${T}"/gentoo-qconfig.h "${QT5_HEADERDIR}"/Gentoo/gentoo-qconfig.h \
 		|| eerror "Failed to install new gentoo-qconfig.h"
 
 	einfo "Updating QT_CONFIG in qconfig.pri"
 
-	local qconfig_pri=${ROOT%/}${QT5_ARCHDATADIR}/mkspecs/qconfig.pri
+#	local qconfig_pri=${ROOT%/}${QT5_ARCHDATADIR}/mkspecs/qconfig.pri
+	local qconfig_pri=${QT5_ARCHDATADIR}/mkspecs/qconfig.pri
 	if [[ -f ${qconfig_pri} ]]; then
 		local x qconfig_add= qconfig_remove=
 		local qt_config=$(sed -n 's/^QT_CONFIG\s*+=\s*//p' "${qconfig_pri}")
@@ -643,7 +645,8 @@ qt5_regenerate_global_qconfigs() {
 		# generate list of QT_CONFIG entries from the existing list,
 		# appending QCONFIG_ADD and excluding QCONFIG_REMOVE
 		eshopts_push -s nullglob
-		for x in "${ROOT%/}${QT5_ARCHDATADIR}"/mkspecs/gentoo/*-qconfig.pri; do
+#		for x in "${ROOT%/}${QT5_ARCHDATADIR}"/mkspecs/gentoo/*-qconfig.pri; do
+		for x in "${QT5_ARCHDATADIR}"/mkspecs/gentoo/*-qconfig.pri; do
 			qconfig_add+=" $(sed -n 's/^QCONFIG_ADD=\s*//p' "${x}")"
 			qconfig_remove+=" $(sed -n 's/^QCONFIG_REMOVE=\s*//p' "${x}")"
 		done
