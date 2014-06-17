@@ -430,7 +430,7 @@ qt5_prepare_env() {
 
 	if [[ ${QT5_MODULE} == qtbase ]]; then
 		# see mkspecs/features/qt_config.prf
-		export QMAKEMODULES="${QT5_BUILD_DIR}/mkspecs/modules:${S}/mkspecs/modules:${SYSROOT}/${QT5_ARCHDATADIR}/mkspecs/modules"
+		export QMAKEMODULES="${QT5_BUILD_DIR}/mkspecs/modules:${S}/mkspecs/modules:${QT5_ARCHDATADIR}/mkspecs/modules"
 	fi
 }
 
