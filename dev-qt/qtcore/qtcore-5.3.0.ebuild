@@ -16,7 +16,7 @@ else
     KEYWORDS="~arm"
 fi
 
-IUSE="+glib icu"
+IUSE="+glib icu opengl gles2"
 
 DEPEND="
         >=dev-libs/libpcre-8.30[pcre16]
@@ -50,6 +50,17 @@ pkg_setup() {
     QCONFIG_REMOVE=(
         $(usev !glib)
         $(usev !icu)
+    )
+
+    # NOTE: fix for arm gles problem, which lead to build
+    # qtdeclarative failed.
+    QCONFIG_ADD=(
+        $(use gles2 && echo opengles2)
+        $(usev opengl)
+    )
+    QCONFIG_DEFINE=(
+        $(use gles2     && echo QT_OPENGL_ES QT_OPENGL_ES_2)
+        $(use opengl    || echo QT_NO_OPENGL)
     )
 
     qt5-build_pkg_setup
