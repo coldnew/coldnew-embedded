@@ -6,3 +6,6 @@
 elibc_glibc
 kernel_linux
 userland_GNU
+
+## crossbuild USE to make crossbuild by portage possible.
+crossbuild
