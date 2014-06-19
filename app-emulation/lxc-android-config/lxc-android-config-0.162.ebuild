@@ -17,7 +17,7 @@ KEYWORDS="~arm"
 IUSE=""
 
 RDEPEND="${DEPEND}"
-DEPEND=""
+DEPEND=">=app-emulation/lxc-1.0.3"
 
 S="${WORKDIR}/${PN}-${PV}"
 
