@@ -20,8 +20,6 @@ cross_update_init() {
     chosts=$(gcc-config -l | awk '{print $2}'| grep -- -| cut -d '-' -f 1-4| sort -u)
     cd $dn || { echo "Failed to cd to $dn" ; exit 1; }
     export overlay=$(portageq envvar PORTDIR_OVERLAY)
-    #cross_wrap_etc $chost
-    #EIX_PREFIX=/usr/${CHOST} eix-update
 
     for chost in $chosts; do
         [[ $chost == $CBUILD ]] && continue
