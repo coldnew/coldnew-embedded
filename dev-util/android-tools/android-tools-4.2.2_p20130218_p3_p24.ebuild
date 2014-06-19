@@ -40,6 +40,12 @@ src_prepare() {
     sed -i 's/\-lselinux//' core/fastboot/Makefile
     sed -i 's/\-lselinux//' extras/ext4_utils/Makefile
 
+    # Make surce use right toolchain
+    sed -i "1s/^/CC=$(tc-getCC)\n/" core/adb/Makefile
+    sed -i "1s/^/CC=$(tc-getCC)\n/" core/adbd/Makefile
+    sed -i "1s/^/CC=$(tc-getCC)\n/" core/fastboot/Makefile
+    sed -i "1s/^/CC=$(tc-getCC)\n/" extras/ext4_utils/Makefile
+
     # Generate simple makefile
     cat << EOF > Makefile
 
