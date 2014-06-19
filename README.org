@@ -12,4 +12,15 @@ After use
 
 : crossdev -t armv7a-hardfloat-linux-gnueabi
 
-Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to =/usr/local/portage/layman/coldnew-embedded/profiles/default/linux/arm/10.0/imx6/minimal=.
+Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to
+=/usr/local/portage/layman/coldnew-embedded/profiles/default/linux/arm/10.0/imx6/minimal=.
+
+* TODO
+
+- dev-utils/android-tools
+
+  Add systemd or sysvinit script
+
+- dev-qt
+
+  Make all qt libs can be cross build or local build
