@@ -1,0 +1,19 @@
+
+# For release build, we do not need these files
+INSTALL_MASK="${INSTALL_MASK}
+	/usr/lib/pkgconfig
+	/usr/include
+	/usr/share/zoneinfo
+	/usr/share/bashcompletion
+	/usr/share/gtk-doc
+	/usr/share/i18n
+	/usr/share/locale
+"
+# No-mote M4 files
+INSTALL_MASK="${INSTALL_MASK}
+	*.m4
+"
+# No any static libs
+INSTALL_MASK="${INSTALL_MASK}
+	*.a
+"
