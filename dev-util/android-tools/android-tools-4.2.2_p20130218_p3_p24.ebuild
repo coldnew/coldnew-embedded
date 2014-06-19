@@ -26,6 +26,8 @@ DEPEND="${RDEPEND}"
 
 S="${WORKDIR}/${PN}-${PV}"
 
+# TODO: Add systemd or sysinit init script
+
 src_prepare() {
     # Apply patches
     epatch "${FILESDIR}/ext4_remove_selinux_support.patch"
