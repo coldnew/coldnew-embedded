@@ -2,7 +2,9 @@
 * About this overlay
 
 This is an experimental gentoo overlay which is aim to create a
-minimal linux rootfs based on corssdev.
+minimal linux rootfs based on corssdev, the generated rootfs may not
+contains the same source in Gentoo. That is to say, this overlay help
+you to generate a new embedded distro from gentoo.
 
 DO NOT USE THIS overlay in chroot or native environment to run =emerge=
 
@@ -24,3 +26,7 @@ Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to
 - dev-qt
 
   Make all qt libs can be cross build or local build
+
+- profile
+
+  Make profile can has SDK, release, debug version
