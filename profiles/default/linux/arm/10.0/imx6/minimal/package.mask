@@ -5,3 +5,9 @@
 # seems like build failed
 =dev-lang/python-3.1.1
 =dev-lang/python-3.1
+
+sys-apps/openrc
+sys-apps/sysvinit
+net-misc/netifrc
+#dev-scheme/guile
+#sys-devel/autogen

@@ -16,7 +16,7 @@ else
 	KEYWORDS="~arm"
 fi
 
-IUSE=""
+IUSE="crossbuild"
 
 DEPEND="
 	~dev-qt/qtcore-${PV}[debug=]
@@ -27,10 +27,8 @@ RDEPEND="${DEPEND}"
 
 QT5_TARGET_SUBDIRS=(
 	src/dbus
-# for crossbuild
-	src/tools/bootstrap
-	src/tools/bootstrap-dbus
-# ori
+	$(use crossbuild && echo src/tools/bootstrap)
+	$(use crossbuild && echo src/tools/bootstrap-dbus)
 	src/tools/qdbusxml2cpp
 	src/tools/qdbuscpp2xml
 )

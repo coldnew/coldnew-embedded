@@ -345,11 +345,13 @@ qt5-build_src_install() {
 
 	# fix for qtdbus multiple install host files
 	if [[ ${PN} != qtcore ]]; then
-	    cd "${D}"
-	    rm -rf usr/lib/libQt5Bootstrap.a > /dev/null 2>&1
-	    rm -rf usr/lib/libQt5Bootstrap.prl > /dev/null 2>&1
-	    rm -rf usr/lib/pkgconfig/Qt5Bootstrap.pc > /dev/null 2>&1
-	    rm -rf usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri > /dev/null 2>&1
+	    # This file should not be installed to the destination. It's native and
+	    # non-deterministic. Remove it.
+	    # See: https://bugreports.qt-project.org/browse/QTBUG-31393
+	    rm -rf "${D}"/usr/lib/libQt5Bootstrap.a > /dev/null 2>&1
+	    rm -rf "${D}"/usr/lib/libQt5Bootstrap.prl > /dev/null 2>&1
+	    rm -rf "${D}"/usr/lib/pkgconfig/Qt5Bootstrap.pc > /dev/null 2>&1
+	    rm -rf "${D}"/usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri > /dev/null 2>&1
 	fi
 }
 

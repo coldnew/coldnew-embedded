@@ -11,7 +11,7 @@ USE="${USE} minimal elibc_glibc kernel_linux"
 USE="${USE} opengl egl gles2 evdev hybris"
 USE="${USE} -X -qt4 -gtk -xcb -ibus"
 USE="${USE} -pam -nls -e2fsprogs"
-USE="${USE} -perl -python"
+USE="${USE} -perl -python -guile"
 USE="${USE} -ipv6 -examples"
 
 # TODO: remove

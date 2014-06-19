@@ -48,7 +48,7 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	bindist +classic debug dri3 +egl +gallium gbm gles1 gles2 +llvm +nptl
+	bindist +classic debug dri3 +egl +gallium gbm gles1 gles2 +llvm +nptl hybris
 	opencl openvg osmesa pax_kernel openmax pic r600-llvm-compiler selinux
 	vdpau wayland xvmc xa kernel_FreeBSD"
 
@@ -369,6 +369,12 @@ multilib_src_configure() {
 
 multilib_src_install() {
 	emake install DESTDIR="${D}"
+
+	if use hybris; then
+	    # Remove EGL implementations provided by dev-libs/libhybris #
+	    rm -rfv "${ED}"usr/include/{EGL,KHR,GLES2} \
+                "${ED}"usr/$(get_libdir)/pkgconfig/{egl,glesv2}.pc
+	fi
 
 	# Move libGL and others from /usr/lib to /usr/lib/opengl/blah/lib
 	# because user can eselect desired GL provider.

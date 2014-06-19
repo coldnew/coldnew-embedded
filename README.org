@@ -17,6 +17,43 @@ After use
 Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to
 =/usr/local/portage/layman/coldnew-embedded/profiles/default/linux/arm/10.0/imx6/minimal=.
 
+* Use qemu to help cross compile
+
+#+BEGIN_SRC c
+  #include <string.h>
+  #include <unistd.h>
+  #include <sys/mount.h>
+
+  int main(int argc, char **argv, char **envp) {
+
+          char *newargv[argc + 3];
+          newargv[0] = argv[0];
+
+          // TODO: mound bind /dev to sysroot
+
+          // Check if SYSROOT env is defined
+          char *sysroot = getenv("SYSROOT");
+          if (!sysroot) {
+                  printf("SYSROOT not define, fallback to default usage\n");
+                  newargv[1] = "";
+                  newargv[2] = "";
+          }
+          else {
+                  newargv[1] = "-L";
+                  newargv[2] = "/usr/armv7a-hardfloat-linux-gnueabi";
+
+                  // mount -o bind /dev ${SYSROOT}/dev
+                  mount("/dev")
+          }
+
+          memcpy(&newargv[3], &argv[1], sizeof(*argv) * (argc - 1));
+          newargv[argc + 2] = NULL;
+
+          return execve("/usr/bin/qemu-arm", newargv, envp);
+  }
+#+END_SRC
+
+
 * TODO
 
 - dev-utils/android-tools
