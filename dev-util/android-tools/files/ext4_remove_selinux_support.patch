@@ -1,0 +1,109 @@
+diff -aurN android-tools.ori/extras/ext4_utils/make_ext4fs.c android-tools/extras/ext4_utils/make_ext4fs.c
+--- android-tools.ori/extras/ext4_utils/make_ext4fs.c	2014-06-19 09:46:19.500000000 +0800
++++ android-tools/extras/ext4_utils/make_ext4fs.c	2014-06-19 10:00:14.520000000 +0800
+@@ -59,9 +59,6 @@
+ 
+ #else
+ 
+-#include <selinux/selinux.h>
+-#include <selinux/label.h>
+-
+ #define O_BINARY 0
+ 
+ #endif
+@@ -179,9 +176,6 @@
+ 		}
+ #ifndef USE_MINGW
+ 		if (sehnd) {
+-			if (selabel_lookup(sehnd, &dentries[i].secon, dentries[i].path, stat.st_mode) < 0) {
+-				error("cannot lookup security context for %s", dentries[i].path);
+-			}
+ 
+ 			if (dentries[i].secon && verbose)
+ 				printf("Labeling %s as %s\n", dentries[i].path, dentries[i].secon);
+@@ -228,10 +222,6 @@
+ 		dentries[0].file_type = EXT4_FT_DIR;
+ 		dentries[0].uid = 0;
+ 		dentries[0].gid = 0;
+-		if (sehnd) {
+-			if (selabel_lookup(sehnd, &dentries[0].secon, dentries[0].path, dentries[0].mode) < 0)
+-				error("cannot lookup security context for %s", dentries[0].path);
+-		}
+ 		entries++;
+ 		dirs++;
+ 	}
+@@ -561,23 +551,6 @@
+ 	root_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+ 	inode_set_permissions(root_inode_num, root_mode, 0, 0, 0);
+ 
+-#ifndef USE_MINGW
+-	if (sehnd) {
+-		char *secontext = NULL;
+-
+-		if (selabel_lookup(sehnd, &secontext, mountpoint, S_IFDIR) < 0) {
+-			error("cannot lookup security context for %s", mountpoint);
+-		}
+-		if (secontext) {
+-			if (verbose) {
+-				printf("Labeling %s as %s\n", mountpoint, secontext);
+-			}
+-			inode_set_selinux(root_inode_num, secontext);
+-		}
+-		freecon(secontext);
+-	}
+-#endif
+-
+ 	ext4_update_free();
+ 
+ 	ext4_queue_sb();
+diff -aurN android-tools.ori/extras/ext4_utils/make_ext4fs_main.c android-tools/extras/ext4_utils/make_ext4fs_main.c
+--- android-tools.ori/extras/ext4_utils/make_ext4fs_main.c	2014-06-19 09:46:19.500000000 +0800
++++ android-tools/extras/ext4_utils/make_ext4fs_main.c	2014-06-19 09:59:04.190000000 +0800
+@@ -31,8 +31,6 @@
+ #endif
+ 
+ #ifndef USE_MINGW
+-#include <selinux/selinux.h>
+-#include <selinux/label.h>
+ #else
+ struct selabel_handle;
+ #endif
+@@ -73,7 +71,6 @@
+ 	int verbose = 0;
+ 	struct selabel_handle *sehnd = NULL;
+ #ifndef USE_MINGW
+-	struct selinux_opt seopts[] = { { SELABEL_OPT_PATH, "" } };
+ #endif
+ 
+ 	while ((opt = getopt(argc, argv, "l:j:b:g:i:I:L:a:S:fwzJsctv")) != -1) {
+@@ -132,12 +129,6 @@
+ 			break;
+ 		case 'S':
+ #ifndef USE_MINGW
+-			seopts[0].value = optarg;
+-			sehnd = selabel_open(SELABEL_CTX_FILE, seopts, 1);
+-			if (!sehnd) {
+-				perror(optarg);
+-				exit(EXIT_FAILURE);
+-			}
+ #endif
+ 			break;
+ 		case 'v':
+@@ -149,17 +140,6 @@
+ 		}
+ 	}
+ 
+-#if !defined(HOST)
+-	// Use only if -S option not requested
+-	if (!sehnd && mountpoint) {
+-		sehnd = selinux_android_file_context_handle();
+-
+-		if (!sehnd) {
+-			perror(optarg);
+-			exit(EXIT_FAILURE);
+-		}
+-	}
+-#endif
+ 
+ 	if (wipe && sparse) {
+ 		fprintf(stderr, "Cannot specifiy both wipe and sparse\n");
