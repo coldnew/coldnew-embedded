@@ -1,0 +1,61 @@
+#!/bin/bash
+# Copyright 2008-2009 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: Exp $
+
+# - solar
+# - sleipnir
+
+cross_wrap_etc() {
+    local chost=$1
+    conf=/usr/$chost/etc/eixrc.conf
+    echo "EIX_PREFIX=/usr/$chost" >> ${conf}
+    echo "EXEC_EBUILD_SH=/usr/$chost/usr/lib/portage/bin/ebuild.sh" >> ${conf}
+}
+
+cross_update_init() {
+    bn=$(basename $0)
+    [[ $bn != eix-update-wrapper ]] && { echo "I wont understand things" ; exit 1; }
+    dn=$(dirname $(readlink -f $0))
+    chosts=$(gcc-config -l | awk '{print $2}'| grep -- -| cut -d '-' -f 1-4| sort -u)
+    cd $dn || { echo "Failed to cd to $dn" ; exit 1; }
+    export overlay=$(portageq envvar PORTDIR_OVERLAY)
+    #cross_wrap_etc $chost
+    #EIX_PREFIX=/usr/${CHOST} eix-update
+
+    for chost in $chosts; do
+        [[ $chost == $CBUILD ]] && continue
+        [[ $(type -p ${chost}-gcc) == "" ]] && continue
+        echo " * Setting up symlinks for $chost"
+        ln -sf eix-update-wrapper eix-update-${chost}
+    done
+}
+
+# CBUILD must be the first thing we export
+export CBUILD=$(portageq envvar CBUILD)
+
+if [[ $1 == "--init" ]]; then
+    cross_update_init
+    exit 0
+fi
+
+CHOST=$(basename $0)
+CHOST=${CHOST/-eix-update}
+CHOST=${CHOST/eix-update-}
+export CHOST
+
+if [[ $CHOST == wrapper ]]; then
+    if [[ $1 == "--target" ]]; then
+        export CHOST=$2
+        shift 2
+    else
+        echo "After running this program with the --init option as root"
+        echo "you can call it directly like eix-wrapper --target CHOST <emerge options>"
+        echo "or using the emerge-CHOST wrappers"
+        exit 1
+    fi
+fi
+
+[[ $(type -p ${CHOST}-gcc) == "" ]] && { echo "You need to 'crossdev $CHOST' first" ; exit 1; }
+
+EIX_PREFIX=/usr/${CHOST} eix-update
