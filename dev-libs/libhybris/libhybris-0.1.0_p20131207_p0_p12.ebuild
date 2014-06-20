@@ -28,7 +28,6 @@ DEPEND="dev-cpp/gflags
 S="${WORKDIR}/${PN}-${PV}"
 
 src_prepare() {
-
     cd "${S}/hybris"
     eautoreconf
 }
@@ -38,4 +37,14 @@ src_configure() {
     econf \
 	--enable-arch=arm \
 	--with-android-headers=/usr/armv7a-hardfloat-linux-gnueabi/usr/include/android
+}
+
+src_compile() {
+	cd "${S}/hybris"
+	emake
+}
+
+src_install() {
+    cd "${S}/hybris"
+
 }
