@@ -10,7 +10,7 @@ cross_wrap_etc() {
     local chost=$1
     conf=/usr/$chost/etc/eixrc.conf
     echo "EIX_PREFIX=/usr/$chost" >> ${conf}
-    echo "EXEC_EBUILD_SH=/usr/$chost/usr/lib/portage/bin/ebuild.sh" >> ${conf}
+    echo "EXEC_EBUILD_SH=/usr/lib/portage/bin/ebuild.sh" >> ${conf}
 }
 
 # TODO:
