@@ -49,9 +49,6 @@ src_install() {
 
 	emake DESTDIR="${ED}" install
 
-	## Remove bin files
-	rm -rf "${ED}"/usr/bin > /dev/null 2>&1
-
 	## Integrate with media-libs/mesa ##
 	ebegin "Moving GL libs and headers for dynamic switching"
 		local x
