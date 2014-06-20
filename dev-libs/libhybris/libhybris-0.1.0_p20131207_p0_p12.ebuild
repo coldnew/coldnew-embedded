@@ -49,6 +49,9 @@ src_install() {
 
 	emake DESTDIR="${ED}" install
 
+	# TODO:
+	# /usr/lib/opengl may can be removed.
+
 	## Integrate with media-libs/mesa ##
 	ebegin "Moving GL libs and headers for dynamic switching"
 		local x
