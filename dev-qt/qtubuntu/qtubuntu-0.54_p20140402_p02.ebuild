@@ -30,5 +30,9 @@ S="${WORKDIR}/${PN}-${PV}"
 
 src_configure() {
     cd "${S}"
-    qt5-build_src_configure
+
+    # TODO: fix qt5-build eclass
+
+    "${SYSROOT}"/usr/lib/qt5/bin/qmake
+     echo "--------------------------------------------"
 }
