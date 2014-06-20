@@ -44,7 +44,7 @@ src_prepare() {
 multilib_src_configure() {
 	ECONF_SOURCE=${S} econf $(use_enable static-libs static)
 
-	# FIXME: dirty hack
+	# FIXME: dirty hack for crosscompile
 	cd "${S}-.default"
 #	sed -i -r -e \
 #	    "s/\(GTEST_LDFLAGS\ =\).*/\1 -L${SYSROOT/lib}/"  Makefile || die "sed failed"
@@ -58,6 +58,15 @@ multilib_src_test() {
 }
 
 multilib_src_install() {
+	# FIXME: dirty way as Connonical install gmock
+	# install gmock in /usr/src
+	pushd "${S}"
+	dodir /usr/src/gmock
+	cp -rf CMakeLists.txt "${D}"/usr/src/gmock/
+	cp -rf gtest "${D}"/usr/src/gmock/
+	cp -rf src "${D}"/usr/src/gmock/
+	popd
+
 	default
 	dobin scripts/gmock-config
 }
