@@ -52,4 +52,8 @@ src_install() {
 
     dolib libgmock.a
     dolib libgmock_main.a
+
+    cd "${S}"
+    mv scripts/gmock-config gmock-config
+    dobin gmock-config
 }
