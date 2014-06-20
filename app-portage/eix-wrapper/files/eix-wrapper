@@ -7,41 +7,41 @@
 # - sleipnir
 
 cross_wrap_etc() {
-	local chost=$1
-	conf=/usr/$chost/etc/eixrc.conf
-	echo "EIX_PREFIX=/usr/$chost" >> ${conf}
-	echo "EXEC_EBUILD_SH=/usr/$chost/usr/lib/portage/bin/ebuild.sh" >> ${conf}
+    local chost=$1
+    conf=/usr/$chost/etc/eixrc.conf
+    echo "EIX_PREFIX=/usr/$chost" >> ${conf}
+    echo "EXEC_EBUILD_SH=/usr/lib/portage/bin/ebuild.sh" >> ${conf}
 }
 
 cross_init() {
-	bn=$(basename $0)
-	[[ $bn != eix-wrapper ]] && { echo "I wont understand things" ; exit 1; }
-	dn=$(dirname $(readlink -f $0))
-	chosts=$(gcc-config -l | awk '{print $2}'| grep -- -| cut -d '-' -f 1-4| sort -u)
-	cd $dn || { echo "Failed to cd to $dn" ; exit 1; }
-	export overlay=$(portageq envvar PORTDIR_OVERLAY)
+    bn=$(basename $0)
+    [[ $bn != eix-wrapper ]] && { echo "I wont understand things" ; exit 1; }
+    dn=$(dirname $(readlink -f $0))
+    chosts=$(gcc-config -l | awk '{print $2}'| grep -- -| cut -d '-' -f 1-4| sort -u)
+    cd $dn || { echo "Failed to cd to $dn" ; exit 1; }
+    export overlay=$(portageq envvar PORTDIR_OVERLAY)
 
-	for chost in $chosts; do
-		[[ $chost == $CBUILD ]] && continue
-		[[ $(type -p ${chost}-gcc) == "" ]] && continue
-		echo " * Setting up symlinks for $chost"
-		ln -sf eix-wrapper eix-${chost}
-		ln -sf eix-wrapper ${chost}-eix
-		if [ -d /usr/${chost} ] ; then
-			if [[ ! -f /usr/${chost}/etc/eixrc.conf ]]; then
-				echo " * Setting up cross basics in /usr/${chost}/etc"
-				cross_wrap_etc $chost
-			fi
-		fi
-	done
+    for chost in $chosts; do
+        [[ $chost == $CBUILD ]] && continue
+        [[ $(type -p ${chost}-gcc) == "" ]] && continue
+        echo " * Setting up symlinks for $chost"
+        ln -sf eix-wrapper eix-${chost}
+        ln -sf eix-wrapper ${chost}-eix
+        if [ -d /usr/${chost} ] ; then
+            if [[ ! -f /usr/${chost}/etc/eixrc.conf ]]; then
+                echo " * Setting up cross basics in /usr/${chost}/etc"
+                cross_wrap_etc $chost
+            fi
+        fi
+    done
 }
 
 # CBUILD must be the first thing we export
 export CBUILD=$(portageq envvar CBUILD)
 
 if [[ $1 == "--init" ]]; then
-	cross_init
-	exit 0
+    cross_init
+    exit 0
 fi
 
 CHOST=$(basename $0)
@@ -50,15 +50,15 @@ CHOST=${CHOST/eix-}
 export CHOST
 
 if [[ $CHOST == wrapper ]]; then
-	if [[ $1 == "--target" ]]; then
-		export CHOST=$2
-		shift 2
-	else
-		echo "After running this program with the --init option as root"
-		echo "you can call it directly like eix-wrapper --target CHOST <emerge options>"
-		echo "or using the emerge-CHOST wrappers"
-		exit 1
-	fi
+    if [[ $1 == "--target" ]]; then
+        export CHOST=$2
+        shift 2
+    else
+        echo "After running this program with the --init option as root"
+        echo "you can call it directly like eix-wrapper --target CHOST <emerge options>"
+        echo "or using the emerge-CHOST wrappers"
+        exit 1
+    fi
 fi
 
 [[ $(type -p ${CHOST}-gcc) == "" ]] && { echo "You need to 'crossdev $CHOST' first" ; exit 1; }
