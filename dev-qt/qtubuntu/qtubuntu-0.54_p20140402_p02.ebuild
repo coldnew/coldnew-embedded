@@ -4,7 +4,10 @@
 
 EAPI=5
 
-inherit autotools base bzr qt5-build
+# Declare official file to make qt5-build not download source from wrong place
+OFFICIAL_QT_FILE=false
+
+inherit qt5-build bzr
 
 DESCRIPTION="Qt plugins for Ubuntu Application API and Qt Platform Abstraction (QPA)"
 EBZR_REVISION="218"
