@@ -10,29 +10,42 @@ DO NOT USE THIS overlay in chroot or native environment to run =emerge=
 
 * How to use
 
-After use
+You need to create cross toolchain by =crossdev= first.
 
 : crossdev -t armv7a-hardfloat-linux-gnueabi
 
 Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to
-=/usr/local/portage/layman/coldnew-embedded/profiles/default/linux/arm/10.0/imx6/minimal=.
+=/usr/local/portage/coldnew-embedded/profiles/default/linux/arm/10.0/imx6/minimal=.
 
 * Use qemu to help cross compile
+
+Some annoying application, like python, is not
+
 
 #+BEGIN_SRC c
   #include <string.h>
   #include <unistd.h>
   #include <sys/mount.h>
 
+  int mount_target(char *sysroot)
+  {
+          // TODO: Check if mount already
+          char buf[256];
+          sprintf(buf, "%s/dev/", sysroot);
+
+          // mount -o bind /dev ${SYSROOT}/dev
+          return mount("/dev", buf, NULL, MS_BIND, NULL);
+  }
+
   int main(int argc, char **argv, char **envp) {
 
           char *newargv[argc + 3];
           newargv[0] = argv[0];
 
-          // TODO: mound bind /dev to sysroot
-
-          // Check if SYSROOT env is defined
+           // Check if SYSROOT env is defined
           char *sysroot = getenv("SYSROOT");
+          char buf[256];
+
           if (!sysroot) {
                   printf("SYSROOT not define, fallback to default usage\n");
                   newargv[1] = "";
@@ -42,8 +55,8 @@ Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to
                   newargv[1] = "-L";
                   newargv[2] = "/usr/armv7a-hardfloat-linux-gnueabi";
 
-                  // mount -o bind /dev ${SYSROOT}/dev
-                  mount("/dev")
+                  // mount what we neet
+                  mount_target(sysroot);
           }
 
           memcpy(&newargv[3], &argv[1], sizeof(*argv) * (argc - 1));

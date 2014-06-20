@@ -237,13 +237,13 @@ qt5-build_src_prepare() {
 # @DESCRIPTION:
 # Runs qmake, possibly preceded by ./configure.
 qt5-build_src_configure() {
-	if [[ ${QT5_MODULE} != qtbase ]]; then
+#	if [[ ${QT5_MODULE} != qtbase ]]; then
 	    # toolchain setup
 	    tc-export CC CXX RANLIB STRIP
 
 	    # qmake-generated Makefiles use LD/LINK for linking
 	    export LD="$(tc-getCXX)"
-	fi
+#	fi
 
 	export PKG_CONFIG_LIBDIR=${SYSROOT}/usr/lib/pkgconfig
 	export PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
@@ -335,24 +335,13 @@ qt5-build_src_install() {
 	# remove .la files since we are building only shared libraries
 	prune_libtool_files
 
-	# fix for crrossbuild emerge path
-	if [ "${CBUILD}" != "${CHOST}" ]; then
-		cd "${D}"
-		mv "usr" "usr_old"
-		mv "usr_old/${CHOST}/usr" .
-		rm -rf "usr_old"
-	fi
-
-	# fix for qtdbus multiple install host files
-	if [[ ${PN} != qtcore ]]; then
-	    # This file should not be installed to the destination. It's native and
-	    # non-deterministic. Remove it.
-	    # See: https://bugreports.qt-project.org/browse/QTBUG-31393
-	    rm -rf "${D}"/usr/lib/libQt5Bootstrap.a > /dev/null 2>&1
-	    rm -rf "${D}"/usr/lib/libQt5Bootstrap.prl > /dev/null 2>&1
-	    rm -rf "${D}"/usr/lib/pkgconfig/Qt5Bootstrap.pc > /dev/null 2>&1
-	    rm -rf "${D}"/usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri > /dev/null 2>&1
-	fi
+ 	# fix for crrossbuild emerge path
+ 	if [ "${CBUILD}" != "${CHOST}" ]; then
+ 		cd "${D}"
+ 		mv "usr" "usr_old"
+ 		mv "usr_old/${CHOST}/usr" .
+ 		rm -rf "usr_old"
+ 	fi
 }
 
 # @FUNCTION: qt5-build_pkg_postinst
@@ -489,12 +478,6 @@ qt5_symlink_tools_to_build_dir() {
 # @DESCRIPTION:
 # Runs ./configure for modules belonging to qtbase.
 qt5_base_configure() {
-    # check if use emerge-cross to build qt, if yes, make cross
-    # compile work
-    if [ "${CBUILD}" != "${CHOST}" ]; then
-	cp -rf ${WORKDIR}/${MY_P}/mkspecs/linux-arm-gnueabi-g++ ${WORKDIR}/${MY_P}/mkspecs/${CHOST}-g++
-	sed -i "s/arm-linux-gnueabi/${CHOST}/" ${WORKDIR}/${MY_P}/mkspecs/${CHOST}-g++/qmake.conf
-    fi
 
 	# configure arguments
 	local conf=(
@@ -557,7 +540,7 @@ qt5_base_configure() {
 
 		# reduce relocations in libraries through extra linker optimizations
 		# requires GNU ld >= 2.18
-		# Mask for compile error on ARM platform: see QTBUG-36129
+		# NOTE: Mask for compile error on ARM platform: see QTBUG-36129
 		# -reduce-relocations
 
 		# disable all SQL drivers by default, override in qtsql
@@ -573,10 +556,6 @@ qt5_base_configure() {
 
 		# do not build with -Werror
 		-no-warnings-are-errors
-
-		# NOTE: for cross-emerge
-		-xplatform ${CHOST}-g++
-    		-platform linux-g++
 
 		"${myconf[@]}"
 	)

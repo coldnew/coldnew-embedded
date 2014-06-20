@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<herd>qt</herd>
+	<maintainer>
+		<email></email>
+		<name>unity-gentoo overlay</name>
+	</maintainer>
 	<upstream>
-		<bugs-to>https://bugreports.qt-project.org/</bugs-to>
-		<doc>http://qt-project.org/doc/</doc>
+		<remote-id type="github">shiznix</remote-id>
+		<bugs-to>https://github.com/shiznix/unity-gentoo/issues</bugs-to>
 	</upstream>
 </pkgmetadata>

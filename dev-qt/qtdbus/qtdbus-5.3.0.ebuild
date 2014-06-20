@@ -27,8 +27,8 @@ RDEPEND="${DEPEND}"
 
 QT5_TARGET_SUBDIRS=(
 	src/dbus
-	$(use crossbuild && echo src/tools/bootstrap)
-	$(use crossbuild && echo src/tools/bootstrap-dbus)
+#	$(use crossbuild && echo src/tools/bootstrap)
+#	$(use crossbuild && echo src/tools/bootstrap-dbus)
 	src/tools/qdbusxml2cpp
 	src/tools/qdbuscpp2xml
 )
