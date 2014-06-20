@@ -4,7 +4,9 @@
 
 EAPI="4"
 
-inherit libtool cmake-utils
+PYTHON_COMPAT=( python2_7 )
+
+inherit libtool multilib-minimal python-any-r1
 
 DESCRIPTION="Google's C++ mocking framework"
 HOMEPAGE="http://code.google.com/p/googlemock/"
@@ -12,11 +14,12 @@ SRC_URI="http://googlemock.googlecode.com/files/${P}.zip"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~arm"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="static-libs"
 
-RDEPEND="=dev-cpp/gtest-${PV}*"
+RDEPEND="=dev-cpp/gtest-${PV}*[${MULTILIB_USEDEP}]"
 DEPEND="${RDEPEND}
+	test? ( ${PYTHON_DEPS} )
 	app-arch/unzip"
 
 pkg_setup() {
@@ -38,22 +41,27 @@ src_prepare() {
 	elibtoolize
 }
 
-src_configure() {
-    local mycmakeargs=("${mycmakeargs}
-	-DSIMON_LIB_INSTALL_DIR=/usr/$(get_libdir)
-	")
-    cmake-utils_src_configure
+multilib_src_configure() {
+	ECONF_SOURCE=${S} econf $(use_enable static-libs static)
+
+	# FIXME: dirty hack
+	cd "${S}-.default"
+#	sed -i -r -e \
+#	    "s/\(GTEST_LDFLAGS\ =\).*/\1 -L${SYSROOT/lib}/"  Makefile || die "sed failed"
+	sed -i -r -e \
+	    "s:^GTEST_LDFLAGS.*: GTEST_LDFLAGS = -L${SYSROOT}/lib:"  Makefile || die
 }
 
-# FIXME: Not a good way to install filesls
-# but why can't I use `make install` ?
-src_install() {
-    cd "${S}_build"
+multilib_src_test() {
+	python_setup
+	emake check
+}
 
-    dolib libgmock.a
-    dolib libgmock_main.a
+multilib_src_install() {
+	default
+	dobin scripts/gmock-config
+}
 
-    cd "${S}"
-    mv scripts/gmock-config gmock-config
-    dobin gmock-config
+multilib_src_install_all() {
+	use static-libs || find "${ED}" -name '*.la' -delete
 }
