@@ -52,28 +52,29 @@ src_install() {
 	# TODO:
 	# 1. /usr/lib/opengl may can be removed.
 	# 2. since libhybris do not really net mesa, block it ?
+	# 3. ignore mesa ?
 
 	## Integrate with media-libs/mesa ##
 	ebegin "Moving GL libs and headers for dynamic switching"
 		local x
 		local gl_dir="/usr/$(get_libdir)/opengl/${OPENGL_DIR}/"
-		dodir ${gl_dir}/{lib,extensions,include/GL}
+		dodir ${gl_dir}/hybris/{lib,extensions,include/GL}
 
 		for x in "${ED}"/usr/$(get_libdir)/lib{EGL,GL*,OpenVG}.{la,a,so*}; do
 			if [ -f ${x} -o -L ${x} ]; then
-				mv -f "${x}" "${ED}${gl_dir}"/lib \
+				mv -f "${x}" "${ED}${gl_dir}"/hybris/lib \
 					|| die "Failed to move ${x}"
 			fi
 		done
 		for x in "${ED}"/usr/include/GL/{gl.h,glx.h,glext.h,glxext.h}; do
 			if [ -f ${x} -o -L ${x} ]; then
-				mv -f "${x}" "${ED}${gl_dir}"/include/GL \
+				mv -f "${x}" "${ED}${gl_dir}"/hybris/include/GL \
 					|| die "Failed to move ${x}"
 			fi
 		done
 		for x in "${ED}"/usr/include/{EGL,GLES*,VG,KHR}; do
 			if [ -d ${x} ]; then
-				mv -f "${x}" "${ED}${gl_dir}"/include \
+				mv -f "${x}" "${ED}${gl_dir}"/hybris/include \
 					|| die "Failed to move ${x}"
 			fi
 		done
