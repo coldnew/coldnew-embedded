@@ -17,6 +17,8 @@ SLOT="0"
 KEYWORDS="~arm"
 IUSE=""
 
+OPENGL_DIR="hybris"
+
 RDEPEND="${DEPEND}"
 DEPEND="dev-cpp/gflags
     dev-cpp/glog
@@ -58,25 +60,43 @@ src_install() {
 	ebegin "Moving GL libs and headers for dynamic switching"
 		local x
 		local gl_dir="/usr/$(get_libdir)/opengl/${OPENGL_DIR}/"
-		dodir ${gl_dir}/hybris/{lib,extensions,include/GL}
+		dodir ${gl_dir}/{lib,extensions,include/GL}
 
 		for x in "${ED}"/usr/$(get_libdir)/lib{EGL,GL*,OpenVG}.{la,a,so*}; do
 			if [ -f ${x} -o -L ${x} ]; then
-				mv -f "${x}" "${ED}${gl_dir}"/hybris/lib \
+				mv -f "${x}" "${ED}${gl_dir}"/lib \
 					|| die "Failed to move ${x}"
 			fi
 		done
 		for x in "${ED}"/usr/include/GL/{gl.h,glx.h,glext.h,glxext.h}; do
 			if [ -f ${x} -o -L ${x} ]; then
-				mv -f "${x}" "${ED}${gl_dir}"/hybris/include/GL \
+				mv -f "${x}" "${ED}${gl_dir}"/include/GL \
 					|| die "Failed to move ${x}"
 			fi
 		done
 		for x in "${ED}"/usr/include/{EGL,GLES*,VG,KHR}; do
 			if [ -d ${x} ]; then
-				mv -f "${x}" "${ED}${gl_dir}"/hybris/include \
+				mv -f "${x}" "${ED}${gl_dir}"/include \
 					|| die "Failed to move ${x}"
 			fi
 		done
+
+		# create dummy file .gles-only, this file is used to let eselect-opengl
+		# know we only have gles libs
+		touch "${ED}${gl_dir}"/.gles-only
 	eend $?
+}
+
+pkg_postinst() {
+
+	# Switch to the xorg implementation.
+	echo
+	eselect opengl set --use-old ${OPENGL_DIR}
+
+	# switch to xorg-x11 and back if necessary, bug #374647 comment 11
+	OLD_IMPLEM="$(eselect opengl show)"
+	if [[ ${OPENGL_DIR}x != ${OLD_IMPLEM}x ]]; then
+		eselect opengl set ${OPENGL_DIR}
+		eselect opengl set ${OLD_IMPLEM}
+	fi
 }
