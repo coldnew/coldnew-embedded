@@ -10,9 +10,9 @@ DESCRIPTION="Hybris is a solution that allows the use of bionic-based HW adaptat
 EBZR_REVISION="53"
 EBZR_REPO_URI="lp:ubuntu/libhybris"
 
-HOMEPAGE=""
+HOMEPAGE="https://launchpad.net/libhybris"
 
-LICENSE="Apache-2.0"
+LICENSE="LGPL-3"
 SLOT="0"
 KEYWORDS="~arm"
 IUSE=""
@@ -35,8 +35,8 @@ src_prepare() {
 src_configure() {
     cd "${S}/hybris"
     econf \
-	--enable-arch=arm \
-	--with-android-headers=/usr/armv7a-hardfloat-linux-gnueabi/usr/include/android
+	--enable-arch=${ARCH} \
+	--with-android-headers=${SYSROOT}/usr/include/android
 }
 
 src_compile() {
@@ -47,4 +47,31 @@ src_compile() {
 src_install() {
     cd "${S}/hybris"
 
+	emake DESTDIR="${ED}" install
+
+	## Integrate with media-libs/mesa ##
+	ebegin "Moving GL libs and headers for dynamic switching"
+		local x
+		local gl_dir="/usr/$(get_libdir)/opengl/${OPENGL_DIR}/"
+		dodir ${gl_dir}/{lib,extensions,include/GL}
+
+		for x in "${ED}"/usr/$(get_libdir)/lib{EGL,GL*,OpenVG}.{la,a,so*}; do
+			if [ -f ${x} -o -L ${x} ]; then
+				mv -f "${x}" "${ED}${gl_dir}"/lib \
+					|| die "Failed to move ${x}"
+			fi
+		done
+		for x in "${ED}"/usr/include/GL/{gl.h,glx.h,glext.h,glxext.h}; do
+			if [ -f ${x} -o -L ${x} ]; then
+				mv -f "${x}" "${ED}${gl_dir}"/include/GL \
+					|| die "Failed to move ${x}"
+			fi
+		done
+		for x in "${ED}"/usr/include/{EGL,GLES*,VG,KHR}; do
+			if [ -d ${x} ]; then
+				mv -f "${x}" "${ED}${gl_dir}"/include \
+					|| die "Failed to move ${x}"
+			fi
+		done
+	eend $?
 }
