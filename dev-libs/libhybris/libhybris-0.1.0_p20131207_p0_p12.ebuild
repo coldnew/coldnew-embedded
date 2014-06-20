@@ -50,7 +50,8 @@ src_install() {
 	emake DESTDIR="${ED}" install
 
 	# TODO:
-	# /usr/lib/opengl may can be removed.
+	# 1. /usr/lib/opengl may can be removed.
+	# 2. since libhybris do not really net mesa, block it ?
 
 	## Integrate with media-libs/mesa ##
 	ebegin "Moving GL libs and headers for dynamic switching"
