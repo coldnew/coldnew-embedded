@@ -13,6 +13,8 @@ cross_wrap_etc() {
     echo "EXEC_EBUILD_SH=/usr/$chost/usr/lib/portage/bin/ebuild.sh" >> ${conf}
 }
 
+# TODO:
+# - merge core with eix-wrapper
 cross_update_init() {
     bn=$(basename $0)
     [[ $bn != eix-update-wrapper ]] && { echo "I wont understand things" ; exit 1; }
@@ -55,5 +57,10 @@ if [[ $CHOST == wrapper ]]; then
 fi
 
 [[ $(type -p ${CHOST}-gcc) == "" ]] && { echo "You need to 'crossdev $CHOST' first" ; exit 1; }
+
+# Make surce /usr/${CHOST}/car/cache/eix dir exist and has
+# portage:portage permission
+mkdir /usr/${CHOST}/car/cache/eix > /dev/null 2>&1
+chown portage:portage /usr/${CHOST}/car/cache/eix > /dev/null 2>&1
 
 EIX_PREFIX=/usr/${CHOST} eix-update
