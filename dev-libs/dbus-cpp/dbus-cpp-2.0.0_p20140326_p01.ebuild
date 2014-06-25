@@ -16,12 +16,14 @@ SLOT="0"
 KEYWORDS="~arm"
 IUSE=""
 
-RDEPEND="dev-libs/boost:="
+RDEPEND="dev-libs/boost:=
+	sys-apps/dbus
+	"
 
-DEPEND="dev-cpp/gtest
+DEPEND="${RDEPEND}
+	dev-cpp/gtest
         dev-cpp/gmock
-	dev-libs/boost
-	sys-apps/dbus"
+	dev-libs/boost"
 
 S="${WORKDIR}/${PN}-${PV}"
 
