@@ -44,8 +44,9 @@ RDEPEND+="
 
 ################################################################################
 ## Linux Container
+# 	=app-emulation/lxc-1.0.3
 RDEPEND+="
- 	=app-emulation/lxc-1.0.3
+
  	=app-emulation/lxc-android-config-0.162
 "
 
