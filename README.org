@@ -1,4 +1,11 @@
 
+* This overlay is deprecated
+
+The original goal of this overlay is used Gentoo to create another
+embedded linux distro.
+
+However, since I started to use Yocto, this overlay is deprecated now.
+
 * About this overlay
 
 This is an experimental gentoo overlay which is aim to create a
@@ -19,8 +26,7 @@ Link your =/usr/armv7a-harfloat-linux-gnueabi/etc/make.profile= to
 
 * Use qemu to help cross compile
 
-Some annoying application, like python, is not
-
+To use qemu to help cross compile, you can write following qemu-wrapper.
 
 #+BEGIN_SRC c
   #include <string.h>
@@ -65,18 +71,3 @@ Some annoying application, like python, is not
           return execve("/usr/bin/qemu-arm", newargv, envp);
   }
 #+END_SRC
-
-
-* TODO
-
-- dev-utils/android-tools
-
-  Add systemd or sysvinit script
-
-- dev-qt
-
-  Make all qt libs can be cross build or local build
-
-- profile
-
-  Make profile can has SDK, release, debug version
